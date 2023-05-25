@@ -9,3 +9,6 @@ made in little time, unorganized code, not the best fashionized console you've s
 2. It changes/spoofs osu's uninstallGUID to new random guid
 3. It asks you if you want to change your HWID ( own choice due to not being a critical step ). You have multiple options which you can choose from; Spoofing your disks, hwGUID, machine ID, machineGUID. Recommended to spoof all for safety measures. Some can multi-account without, some cannot.
     + creds to @LockBlock-dev for some lines of code
+
+!! AFTER YOU'RE DONE, REINSTALL OSU! AND USE A VPN WHEN MAKING A NEW ACCOUNT !! 
+!! don't be an idiot aswell and don't farm too much PP on your first days, you'll get insta banned !!
