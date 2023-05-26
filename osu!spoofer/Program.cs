@@ -14,39 +14,39 @@ namespace osu_spoofer
     {
         private static Thread titleThread;
         private static bool stopAnimation = false;
+        private static readonly bool isDebugging = false; // default false 
+
+        public static string Title = @"                 _                        __          " + Environment.NewLine +
+            @"                | |                      / _|         " + Environment.NewLine +
+            @"  ___  ___ _   _| |___ _ __   ___   ___ | |_ ___ _ __ " + Environment.NewLine +
+            @" / _ \/ __| | | | / __| '_ \ / _ \ / _ \|  _/ _ \ '__|" + Environment.NewLine +
+            @"| (_) \__ \ |_| |_\__ \ |_) | (_) | (_) | ||  __/ |   " + Environment.NewLine +
+            @" \___/|___/\__,_(_)___/ .__/ \___/ \___/|_| \___|_|   " + Environment.NewLine +
+            @"                      | |                             " + Environment.NewLine +
+            @"                      |_|                             " + Environment.NewLine;
 
         static void Main(string[] args)
         {
+
 
             titleThread = new Thread(TitleAnimation);
             titleThread.Start();
 
 
-            Console.Write("Do you want to begin process? (Y/N)");
-            string a = Console.ReadLine();
-
-
-            if (a.ToLower() == "n")
-            {
-                return;
-            }
-            else if (a.ToLower() != "y" && a.ToLower() == "n")
-            {
-                return;
-            }
+            StartingSession();
 
             bool keepData = true;
             bool keepSkins = true;
             bool keepSongs = true;
 
-            Console.WriteLine("Deleting osu is required, please continue to do the following.");
+            Console.WriteLine("\nDeleting osu is required, please continue to do the following.");
             Console.WriteLine("Answer with (Y/N) if you prefer to keep your osu! data.");
             Console.WriteLine("");
-            Console.Write("Do you want to keep Data folder? ");
+            Console.Write("Do you want to keep Data folder?  ");
             string data = Console.ReadLine();
-            Console.Write("Do you want to keep Skins folder? ");
+            Console.Write("Do you want to keep Skins folder?  ");
             string skins = Console.ReadLine();
-            Console.Write("Do you want to keep Songs folder? ");
+            Console.Write("Do you want to keep Songs folder?  ");
             string songs = Console.ReadLine();
 
             if (data.ToLower() == "n")
@@ -91,8 +91,16 @@ namespace osu_spoofer
                 string[] files = Directory.GetFiles(root);
                 foreach (string file in files)
                 {
-                    File.Delete(file);
-                    Console.WriteLine($"{file} is deleted.");
+                    if (isDebugging == false)
+                    {
+                        File.Delete(file);
+                        Console.WriteLine($"{file} is deleted.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{file} is deleted. [ DEBUGGING ]");
+                    }
+
                 }
 
 
@@ -101,30 +109,37 @@ namespace osu_spoofer
 
                 string[] directories = Directory.GetDirectories(root);
                 Console.WriteLine("2/3 Fetching directories");
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Gray;
+                
                 foreach (string directory in directories)
                 {
-                    Console.WriteLine("Ha {0}", directory);
 
                     if (keepData == true && Directory.Exists(dataroot) && isDataSkipped == false && directory == dataroot) 
                     {
-                        Console.WriteLine("Data skipped");
+                        Console.WriteLine("Folder Data Saved!");
                         isDataSkipped = true;
                     }
                     else if (keepSkins == true && Directory.Exists(skinsroot) && isSkinsSkipped == false && directory == skinsroot)
                     {
-                        Console.WriteLine("Skins skipped");
+                        Console.WriteLine("Folder Skisn Saved!");
                         isSkinsSkipped = true;
                     }
                     else if (keepSongs == true && Directory.Exists(songsroot) && isSongsSkipped == false && directory == songsroot)
                     {
-                        Console.WriteLine("Songs skipped");
+                        Console.WriteLine("Folder Songs Saved!");
                         isSongsSkipped = true;
                     }
                     else
                     {
-                        Directory.Delete(directory, true);
-                        Console.WriteLine($"{ directory} is deleted.");
+                        if (isDebugging == false)
+                        {
+                            Directory.Delete(directory, true);
+                            Console.WriteLine($"{ directory} is deleted.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{ directory} is deleted. [ DEBUGGING ]");
+                        }
                     }
                 }
                 Thread.Sleep(300);
@@ -133,30 +148,27 @@ namespace osu_spoofer
                 Console.ForegroundColor = ConsoleColor.White;
 
                 Thread.Sleep(300);
-                Console.Clear();
+                //Console.Clear();
             }
 
             Spoof spoof = new Spoof();
 
-            Console.WriteLine("Changing osu! registry");
+            Console.WriteLine("\nChanging osu! registry");
             string hyphenGUID = GenerateRandomGUID();
             string savedUninstallID = spoof.getUninstallID();
 
             spoof.spoofUninstallID(hyphenGUID);
             Console.WriteLine($"Changed id from {savedUninstallID} to {hyphenGUID}");
-            Console.Write("Do you wish to spoof your hardware? (y/n) [possible without] ");
-            string spoofState = Console.ReadLine();
-
-            if (spoofState.ToLower() == "y")
+            
+            for (int i=1; i < 5; i++)
             {
-                ShowSpoofMenu();
-            }
-            else
-            {
-                EndMessage();
-                stopAnimation = true;
-                Thread.Sleep(100);
-                Environment.Exit(0);
+                Console.WriteLine("Continuing in {0}", i.ToString());
+                Thread.Sleep(999);
+                
+                if (i == 4)
+                {
+                    ShowSpoofMenu();
+                }
             }
 
 
@@ -182,10 +194,12 @@ namespace osu_spoofer
             return formattedGuid;
         }
 
+
         public static void ShowSpoofMenu()
         {
             Thread.Sleep(100);
             Console.Clear();
+            Console.WriteLine(Title);
             Console.WriteLine("[1] Spoof Disks");
             Console.WriteLine("[2] Spoof Hardware GUID");
             Console.WriteLine("[3] Spoof Machine GUID");
@@ -238,7 +252,7 @@ namespace osu_spoofer
                     Console.Clear();
                     EndMessage();
                     stopAnimation = true;
-                    Thread.Sleep(100);
+                    Thread.Sleep(2800);
                     Environment.Exit(0);
                     break;
                 default:
@@ -287,14 +301,23 @@ namespace osu_spoofer
 
         }
 
-        public static void StopAnimation()
+        public static void StartingSession()
         {
-            // Request the animation thread to stop
-            if (titleThread != null && titleThread.IsAlive)
-            {
-                titleThread.Abort();
-                titleThread.Join();
-            }
+            Console.WriteLine("Starting process in 5 seconds.");
+            Thread.Sleep(800);
+            Console.Clear();
+            Console.WriteLine("Starting process in 4 seconds..");
+            Thread.Sleep(798);
+            Console.Clear();
+            Console.WriteLine("Starting process in 3 seconds...");
+            Thread.Sleep(758);
+            Console.Clear();
+            Console.WriteLine("Starting process in 2 seconds.");
+            Thread.Sleep(500);
+            Console.Clear();
+            Console.WriteLine("Starting process in 1 second..");
+            Thread.Sleep(500);
+            Console.WriteLine("Starting...");
         }
     }
 }
